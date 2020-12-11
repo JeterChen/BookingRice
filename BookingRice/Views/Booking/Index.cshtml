@@ -1,0 +1,50 @@
+﻿@model List<BookingRice.Models.RiceMenu>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>菜單</h2>
+<br />
+<div id="categoryarea">
+    <em>餐點類別：</em><select id="cagegorys"></select>
+</div>
+<div id="menuarea">
+    <table class="table table-striped">
+        <tr>
+            <th>類別</th>
+            <th>品名</th>
+            <th>單價</th>
+        </tr>
+        @{
+            foreach (var mm in Model)
+            {
+                <tr>
+                    <td>@mm.Category</td>
+                    <td>@mm.Name</td>
+                    <td>@mm.Price</td>
+                </tr>
+            }
+        }
+    </table>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var categoryDom = document.querySelector("#cagegorys");
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("Categorys","Booking")",
+                dataType: "json",
+                success: function (data) {
+                    if (data != null) {
+                        for (var i = 0; i < data.length; i++) {
+                            var opel = document.createElement("option");
+                            opel.textContent = data[i].Name;
+                            categoryDom.appendChild(opel);
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
