@@ -10,13 +10,22 @@ namespace BookingRice.Controllers
 {
     public class BookingController : Controller
     {
-        // GET: Booking/Index
-        public ActionResult Index()
+        // GET: Booking/Index?category=xxx
+        public ActionResult Index(string category)
         {
-            var Menus = GetMenu();
-            return View(Menus);
+            if (string.IsNullOrEmpty(category))
+            {
+               return View(GetMenu());
+            }
+            else
+            {
+                var riceModel = GetMenu();
+                riceModel.category = category;
+                riceModel.Menus = riceModel.Menus.Where(m => m.Category.Equals(category)).ToList();
+                return View(riceModel);
+            }
         }
-
+          
         // GET: Booking/StringPage 回傳 String
         public String StringPage()
         {
@@ -29,6 +38,10 @@ namespace BookingRice.Controllers
         {
             var categorys = new object[]
             {
+                 new
+                {
+                    Name = "----請選擇----"
+                },
                 new
                 {
                     Name = "便當"
@@ -57,8 +70,9 @@ namespace BookingRice.Controllers
             return Json(categorys, JsonRequestBehavior.AllowGet);
         }
 
-        private List<RiceMenu> GetMenu()
+        private RiceModel GetMenu()
         {
+            RiceModel riceModel = new RiceModel();
             List<RiceMenu> Menus = new List<RiceMenu>
             {
                 new RiceMenu
@@ -122,7 +136,8 @@ namespace BookingRice.Controllers
                     Price = 30
                 }
             };
-            return Menus;
+            riceModel.Menus = Menus;
+            return riceModel;
         }
     }
 }

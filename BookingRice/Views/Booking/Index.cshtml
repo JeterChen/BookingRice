@@ -1,4 +1,4 @@
-﻿@model List<BookingRice.Models.RiceMenu>
+﻿@model BookingRice.Models.RiceModel
 @{
     ViewBag.Title = "Index";
 }
@@ -6,7 +6,7 @@
 <h2>菜單</h2>
 <br />
 <div id="categoryarea">
-    <em>餐點類別：</em><select id="cagegorys"></select>
+    <em>餐點類別：</em><select id="cagegorys" onchange="ChangeCategory()"></select>
 </div>
 <div id="menuarea">
     <table class="table table-striped">
@@ -16,7 +16,7 @@
             <th>單價</th>
         </tr>
         @{
-            foreach (var mm in Model)
+            foreach (var mm in Model.Menus)
             {
                 <tr>
                     <td>@mm.Category</td>
@@ -30,21 +30,33 @@
 @section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
+
             var categoryDom = document.querySelector("#cagegorys");
-            $.ajax({
-                type: "GET",
-                url: "@Url.Action("Categorys","Booking")",
-                dataType: "json",
-                success: function (data) {
-                    if (data != null) {
-                        for (var i = 0; i < data.length; i++) {
-                            var opel = document.createElement("option");
-                            opel.textContent = data[i].Name;
-                            categoryDom.appendChild(opel);
+             $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("Categorys","Booking")",
+                    dataType: "json",
+                    cache: false,
+                    async: false,
+                    success: function (data) {
+                        if (data != null) {
+                            for (var i = 0; i < data.length; i++) {
+                                var opel = document.createElement("option");
+                                opel.textContent = data[i].Name;
+                                categoryDom.appendChild(opel);
+                            }
                         }
                     }
-                }
-            });
+             }); 
+            var cateval = "@Html.Raw(Model.category)";
+            if (cateval != '') {
+                $("#cagegorys").val(cateval);
+            }
         });
+
+        function ChangeCategory() {
+            var categoryDom = $("#cagegorys");
+            window.location = "@Url.Action("Index", "Booking")?category=" + categoryDom.val();
+        }
     </script>
 }
